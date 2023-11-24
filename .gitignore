@@ -1,0 +1,15 @@
+# pytorch weight file
+*.pt
+
+# onnx weight file
+*.onnx
+
+
+# model datasets
+backend/sr/EDSR/datasets/*
+
+# other file
+*.ipynb_checkpoints*
+*.pkl_memoize_py3
+
+
