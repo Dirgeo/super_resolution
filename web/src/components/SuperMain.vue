@@ -12,7 +12,8 @@
               创建检测任务
             </h2>
             <div class="text-muted mt-1">
-              选择图片上传即可！
+              选择图片上传即可！<br>
+              仅作为模型Demo使用，图片通道要求为3，分辨率不得大于500*500
             </div>
           </div>
 
@@ -118,7 +119,7 @@ export default {
       reader.onload = (file)=>{
         // 得到url安全的base64
         b64 = file.target.result.split(",")[1]
-        b64 = b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
+        // b64 = b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
         let image = {
           source_image: file.target.result,
           target_image: null,
@@ -132,18 +133,27 @@ export default {
     const sr = ()=>{
       store.commit("updateRunning", true)
       // 使用base64编码
+      console.log("start send https")
       $.ajax({
-        url: "http://127.0.0.1:8000/edsr/",
+        url: "https://lovespace.club/edsr/",
         type:'post',
         data:{
           source:b64,
         },
         success(res){
-          console.log(res)
+          if(res.state === "success"){
+            let target_image = "data:image/png;base64," + res.data
+            store.commit("updateImage", {
+              source_image: store.state.model.source_image,
+              target_image: target_image,
+            })
+          } else {
+            alert(res.data)
+          }
           store.commit("updateRunning", false)
         },
         error(){
-          console.log("error")
+          alert("请求失败，稍后再试")
           store.commit("updateRunning", false)
         }
       })
