@@ -101,7 +101,7 @@ def make_model(args, parent=False):
 
 class EDSR(nn.Module):
 
-    def __init__(self, scale=2):
+    def __init__(self, scale=4):
         super(EDSR, self).__init__()
 
         conv=default_conv
@@ -139,8 +139,6 @@ class EDSR(nn.Module):
         m_tail = [
             Upsampler(conv, scale, n_feats, act=False),
             conv(n_feats, n_colors, kernel_size)
-
-            
         ]
 
         self.head = nn.Sequential(*m_head)
@@ -152,6 +150,7 @@ class EDSR(nn.Module):
         x = self.head(x)
 
         res = self.body(x)
+        
         res += x
 
         x = self.tail(res)
