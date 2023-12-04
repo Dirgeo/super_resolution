@@ -6,6 +6,7 @@ import utility
 
 import torch
 import torch.nn.utils as utils
+from torchvision import transforms
 from tqdm import tqdm
 
 class Trainer():

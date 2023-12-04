@@ -6,6 +6,8 @@ import torch.nn as nn
 import torch.nn.parallel as P
 import torch.utils.model_zoo
 
+from .edsr_django import EDSR
+
 class Model(nn.Module):
     def __init__(self, args, ckp):
         super(Model, self).__init__()

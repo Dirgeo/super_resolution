@@ -10,6 +10,6 @@ backend/sr/EDSR/datasets/*
 
 # other file
 *.ipynb_checkpoints*
-*.pkl_memoize_py3
+*.pkl_memoize_py3*
 
 
