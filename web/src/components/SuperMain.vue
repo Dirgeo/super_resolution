@@ -95,6 +95,20 @@ import {useStore} from "vuex";
 import $ from "jquery";
 import {ref} from "vue";
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default {
   name: "SuperMain.vue",
   components:{
@@ -107,11 +121,19 @@ export default {
     let b64 = "";// 图片的base64编码
 
     const getFile = (e)=>{
+
+      if (!e.target.files || e.target.files.length === 0) {
+        console.error("No file selected");
+        return;
+      }
+
       choose_image = e.target.files[0]
       // 检查上传文件的类型
       if(choose_image !== null && choose_image.type.indexOf("image") === -1){
         choose_image = null
         alert("传什么呢!!!")
+        resetFileInput();// 重置文件输入框
+        return;
       }
 
       const reader = new FileReader()
@@ -128,14 +150,23 @@ export default {
       }
 
       reader.readAsDataURL(choose_image)
+      
+      resetFileInput(); // 重置文件输入框
     }
+
+    const resetFileInput = () => {
+      const fileInput = document.getElementById("fileInput");
+      if (fileInput) {
+        fileInput.value = ""; // 清空文件输入框的值
+      }
+    };
 
     const sr = ()=>{
       store.commit("updateRunning", true)
       // 使用base64编码
       console.log("start send https")
       $.ajax({
-        url: "https://lovespace.club/edsr/",
+        url: "http://127.0.0.1:3000/edsr/inference/",
         type:'post',
         data:{
           source:b64,
@@ -167,7 +198,33 @@ export default {
     }
 
     const start_shot = ()=>{
-      
+      $.ajax({
+        url: "http://127.0.0.1:3000/edsr/take_pic/",
+        type:'post',
+        data:{
+          source:b64,
+        },
+        success(res){
+           if(res.state === "success"){
+              let image = "data:image/png;base64," + res.data
+              store.commit("updateImage", {
+                source_image: image,
+                target_image: store.state.model.target_image,
+             }
+             )
+             b64 = res.data
+           } 
+           else {
+             alert(res.data)
+           }
+           store.commit("updateRunning", false)
+          console.log(res.state)        },
+
+         error(){
+           alert("请求失败，稍后再试")
+           store.commit("updateRunning", false)
+         }
+      })
     }
 
     return {
